@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace pooling
 {
@@ -14,6 +15,14 @@ namespace pooling
         public delegate void ObjectCreationCallback(T obj);
         public event ObjectCreationCallback OnObjectCreationCallBack;
 
+        private DiContainer _container;
+        
+        [Inject]
+        private void Construct(DiContainer container)
+        {
+            _container = container;
+        }
+        
         public Pooling<T> Initialize(GameObject refObject, Transform parent)
         {
             return Initialize(0, refObject, parent);
@@ -50,7 +59,7 @@ namespace pooling
             var obj = Find(x => x.isUsing == false);
             if (obj == null && createMoreIfNeeded)
             {
-                obj = CreateObject(parent, position);
+                obj = CreateObject(position);
                 Add(obj);
             }
 
@@ -77,11 +86,13 @@ namespace pooling
             return FindAll(x => x.isUsing == active);
         }
 
-        private T CreateObject(Transform parent = null, Vector3? position = null)
+        private T CreateObject(Vector3? position = null)
         {
-            var go = GameObject.Instantiate(referenceObject, position ?? mStartPos, Quaternion.identity, parent ?? mParent);
+            var go = _container.InstantiatePrefab(referenceObject, position ?? mStartPos, Quaternion.identity, mParent);
             var obj = go.GetComponent<T>() ?? go.AddComponent<T>();
-            obj.transform.localPosition = position ?? mStartPos;
+            var objTransform = obj.transform;
+            objTransform.localPosition = position ?? mStartPos;
+            objTransform.localScale = Vector3.one;
             obj.name = obj.objectName + Count;
 
 			if(OnObjectCreationCallBack != null)

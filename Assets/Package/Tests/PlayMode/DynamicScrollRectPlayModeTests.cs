@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using pooling;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -18,7 +19,7 @@ namespace dynamicscroll.tests
             
             referenceObject = GameObject.Instantiate(Resources.Load<GameObject>("ItemTest"));
             scrollRect = GameObject.Instantiate(Resources.Load<DynamicScrollRect>("VerticalScrollViewTest"));
-            dynamicScroll = new DynamicScroll<MockData, MockObject>();
+            dynamicScroll = new DynamicScroll<MockData, MockObject>(new Pooling<MockObject>());
             
             data = new List<MockData> {
                 new MockData("0x12345"),

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Zenject;
 
 namespace dynamicscroll
 {
@@ -54,6 +55,13 @@ namespace dynamicscroll
 		private IList<T> infoList;
         private Tween forceMoveTween;
         public IList<T> RawDataList => infoList;
+
+        [Inject]
+        public DynamicScroll(Pooling<T1> pooling)
+        {
+	        objectPool = pooling;
+        }
+        
 		public void Initiate(DynamicScrollRect scrollRect, IList<T> infoList, int startIndex, GameObject objReference, bool createMoreIfNeeded = true, int? forceAmount = null)
         {
             ScrollRect = scrollRect;
